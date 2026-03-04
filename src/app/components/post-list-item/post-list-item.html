@@ -1,0 +1,10 @@
+@if (post) {    
+    <div class ="pt-4 p-2">
+        <h3>{{ post.title }}</h3>
+        <p>{{ post.content }}</p>
+        <div>
+            <span class="badge rounded-pill text-bg-light">{{ post.category.name }}</span>
+            <span>{{ post.createdDate | date:'medium' }}</span>
+        </div>
+    </div>
+}

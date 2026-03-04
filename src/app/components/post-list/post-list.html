@@ -1,0 +1,10 @@
+@if (posts$ | async; as posts) {
+    @if (posts.length) {
+      <h2>Blog Posts</h2>
+        @for (post of posts; track $index) {
+            <app-post-list-item [post]="post"></app-post-list-item>
+    }
+  } @else {
+    <p>No posts available.</p>
+  }
+}
