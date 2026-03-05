@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, catchError, map, of } from 'rxjs';
-import { Post } from '../data/post';
+import { Observable, catchError, map, of, throwError } from 'rxjs';
+import { Post, PostCreateInput } from '../data/post';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -22,6 +22,20 @@ export class PostService {
         catchError((error) => {
           console.error('Error fetching posts', error);
           return of([]);
+        })
+      );
+  }
+
+  createPost(input: PostCreateInput): Observable<Post> {
+    return this.http
+      .post<Post | { data: Post }>(this.baseUrl, input)
+      .pipe(
+        map((res: Post | { data: Post }) =>
+          'data' in (res as any) ? (res as { data: Post }).data : (res as Post)
+        ),
+        catchError((error) => {
+          console.error('Error creating post', error);
+          return throwError(() => error);
         })
       );
   }
