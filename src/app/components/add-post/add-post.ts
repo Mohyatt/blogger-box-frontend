@@ -6,6 +6,7 @@ import { Category } from '../../data/category';
 import { PostCreateInput } from '../../data/post';
 import { CategoryService } from '../../services/category.service';
 import { PostService } from '../../services/post.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-add-post',
@@ -16,6 +17,18 @@ import { PostService } from '../../services/post.service';
 export class AddPost implements OnInit {
   form: FormGroup;
   categories$: Observable<Category[]>;
+
+  private readonly Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener('mouseenter', Swal.stopTimer);
+      toast.addEventListener('mouseleave', Swal.resumeTimer);
+    },
+  });
 
   constructor(
     private fb: FormBuilder,
@@ -40,6 +53,10 @@ export class AddPost implements OnInit {
   onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.Toast.fire({
+        icon: 'warning',
+        title: 'Please review your post',
+      });
       return;
     }
 
@@ -52,10 +69,18 @@ export class AddPost implements OnInit {
 
     this.postService.createPost(payload).subscribe({
       next: () => {
-        this.router.navigate(['/']);
+        this.Toast.fire({
+          icon: 'success',
+          title: 'Post Submitted Successfully',
+        });
+        this.router.navigateByUrl('/');
       },
       error: (err) => {
-        console.error('Failed to create post', err);
+        console.error(err);
+        this.Toast.fire({
+          icon: 'error',
+          title: 'Submission failed',
+        });
       },
     });
   }
